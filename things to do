@@ -1,0 +1,11 @@
+Website design 
+Render multiple charts
+
+
+
+
+To do after finalized:
+	1. Explaination on the input/output format (confidence range?)
+	2. Axis and legend names
+	3. Show only prediction of data or full data (different shape of lines with range)
+	4. Integrate with the main website?

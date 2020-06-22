@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html >
+<head>
+  <meta charset="UTF-8",content="width=device-width, initial-scale=1">
+  <title>Hospitalization Prediction with Protected Privacy</title>
+  <link href='https://fonts.googleapis.com/css?family=Pacifico' rel='stylesheet' type='text/css'>
+<link href='https://fonts.googleapis.com/css?family=Arimo' rel='stylesheet' type='text/css'>
+<link href='https://fonts.googleapis.com/css?family=Hind:300' rel='stylesheet' type='text/css'>
+<link href='https://fonts.googleapis.com/css?family=Open+Sans+Condensed:300' rel='stylesheet' type='text/css'>
+<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+<script src='static/Chart.min.js'></script>
+</head>
+
+<body style="background: #000;">
+ <div class="login">  
+     <h1> Hospitalization Prediction with Protected Privacy</h1>
+
+     <p style = "margin-top: 10px"> The uploaded data will only be temporarily used for prediction and will not be stored in any form. </p>
+     <p> Click on the "Choose File" button to upload hospitalization data: </p>
+     <p> Input format: csv file with first column of date(different forms acceptable), one or multiple other columns of hospitalization information to predict on. Please input at least 5 days data.<p> 
+    <form action="{{ url_for('predict')}}" method="post" enctype="multipart/form-data">
+
+    	<input type="file" name="file" placeholder="Hospitalization Data" required="required" />
+
+        <button type="submit" class="btn btn-primary btn-block btn-large">Prediction for the next 7 days</button>
+    </form>
+
+   <br>
+
+ </div>
+
+</body>
+</html>
