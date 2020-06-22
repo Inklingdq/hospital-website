@@ -1,7 +1,7 @@
 # Hospital website
 A website for hospitals to upload data and download future predictions
 
-
+Refer to XXhospital.csv for input format and XXhopistal_prediction.csv for output format.
 
 ## License
 
