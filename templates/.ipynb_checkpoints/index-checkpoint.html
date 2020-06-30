@@ -9,6 +9,22 @@
 <link href='https://fonts.googleapis.com/css?family=Open+Sans+Condensed:300' rel='stylesheet' type='text/css'>
 <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 <script src='static/Chart.min.js'></script>
+<style>
+/* Create two equal columns that floats next to each other */
+.column {
+  float: left;
+  width: 50%;
+  padding: 10px;
+  height: 300px; /* Should be removed. Only for demonstration */
+}
+
+/* Clear floats after the columns */
+.row:after {
+  content: "";
+  display: table;
+  clear: both;
+}
+    </style>
 </head>
 
 <body style="background: #000;">
@@ -17,17 +33,33 @@
 
      <p style = "margin-top: 10px"> The uploaded data will only be temporarily used for prediction and will not be stored in any form. </p>
      <p> Click on the "Choose File" button to upload hospitalization data: </p>
-     <p> Input format: csv file with first column of date(different forms acceptable), one or multiple other columns of hospitalization information to predict on. Please input at least 5 days data.<p> 
+
     <form action="{{ url_for('predict')}}" method="post" enctype="multipart/form-data">
 
     	<input type="file" name="file" placeholder="Hospitalization Data" required="required" />
 
         <button type="submit" class="btn btn-primary btn-block btn-large">Prediction for the next 7 days</button>
     </form>
+     <p> Input format: csv file with first column of date(different forms acceptable), one or multiple other columns of hospitalization information to predict on. Please input at least 5 days data.<p> 
+    <div class="row">
+  <div class="column" style="background-color:black;">
+    <p>Input format</p>
+      <script>
+          console.log('Current directory: ' + process.cwd());
+      </script>
+    <img src="templates/input.jpg" width="200" height="300">
 
-   <br>
+  </div>
+  <div class="column" style="background-color:black;">
+    <p>Output format</p>
+    <img src="templates/output.jpg" width="200" height="300">
 
+  </div>
+</div>
+     
+     <br>
  </div>
+    
 
 </body>
 </html>

@@ -10,11 +10,13 @@ from flask import Flask, request, jsonify, render_template, send_file, Response,
 import flask
 import csv
 import json
+from flask_session import Session
+
 
 app = Flask(__name__)
 app.config['subdomain_matching'] = 'covidseverity.com/hospitalization'
 app.config['SEVER_NAME'] = 'covidseverity.com/hospitalization'
-
+app.secret_key = os.urandom(24)
 ### Get format of input file.
 def format(filename):	
 	if '.' not in filename:
