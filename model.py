@@ -1,5 +1,3 @@
-## Imports
-## NOTE: GOING TO HARDCODE THE PATH FOR THE TIME BEING, MUST BE CHANGED AS NEEDED
 import numpy as np
 import pandas as pd
 from os.path import join as oj
@@ -28,37 +26,89 @@ import matplotlib as plt
 from scipy.stats import percentileofscore
 from sklearn.metrics import mean_absolute_error
 import statsmodels.api as sm
-
+import plotly.graph_objects as go
+import plotly.io as pio
 
 # CHANGE THIS
 from exponential_modeling import *
 from fit_and_predict import *
-
-
-
 # Function to Train CLEP on your Hospital Data
 # Default: 7 Days Prediction
 exponential = {'model_type':'exponential'}
 shared_exponential = {'model_type':'shared_exponential'}
 linear = {'model_type':'linear'}
 advanced_model = {'model_type':'advanced_shared_model'}
+# Function to Train CLEP on your Hospital Data
+# Default: 7 Days Prediction
+predictors = [linear, shared_exponential]
+#CLEP: start_day=25
 
-def predict_kth_day(df, k, output_var = "hospitalizations"):
+def generate_plot(d):
+    fig = go.Figure()
+    r = '179,74,71'
+    b = '111,136,190'
+    red ='rgb(' + r + ')'
+    blue = 'rgb(' + b + ')'
+    red_fill = 'rgba(' + r + ',0.4)'
+    blue_fill = 'rgba(' + b + ',0.4)'
+    new_dates = ['+' +str(i + 1)+' day(s)' for i in range(7)]
+    # Add traces
+    lower = [x[0] for x in d[3].values[0]]
+    upper = [x[1] for x in d[3].values[0]]
+    fig.add_trace(go.Scatter(x = data['Date'], y = data['UCSF'],
+                    mode='lines + markers',
+                    name='Data',line_color = blue))
+    fig.add_trace(go.Scatter(x = new_dates, y = lower, mode = 'lines', line_color = red_fill, showlegend = False))
+    fig.add_trace(go.Scatter(x = new_dates, y = d[2].values[0],
+                    mode = 'lines', fill = 'tonexty', fillcolor = red_fill, line_color = red, name = 'Future Prediction'))
+
+    fig.add_trace(go.Scatter(x = new_dates, y = upper, fill = 'tonexty', mode = 'lines', fillcolor = red_fill, line_color = red_fill, showlegend = False))
+    fig.add_trace(go.Scatter(x = data['Date'][-len(d[0]):], y = [x[0] for x in d[1]], mode = 'lines', line_color = blue_fill,showlegend = False))
+    fig.add_trace(go.Scatter(x = data['Date'][-len(d[0]):], y = d[0], fill = 'tonexty', mode = 'lines', line={'dash': 'dash', 'color': blue}, fillcolor = blue_fill, name = 'Past Prediction'))
+    fig.add_trace(go.Scatter(x = data['Date'][-len(d[0]):], y = [x[1] for x in d[1]], fill = 'tonexty', mode = 'lines', fillcolor = blue_fill, line_color = blue_fill, showlegend = False))
+    fig.update_layout(
+        title="Hospitalization prediction",
+        xaxis_title="Date",
+        yaxis_title="Counts",
+        title_font = dict(size = 20),
+        font=dict(
+            family = "Lora,Helvetica Neue,Helvetica,Arial,sans-serif",
+            size=12,
+            color="white"
+        ),
+        template = 'plotly_dark'
+    )
+def predict(df, k, output_var = "hospitalizations"):
         
     hospitz = df[output_var].values
         
     df_h = pd.DataFrame({"Hospital": ["Hospital_Name"], "hospitalizations": [hospitz]})
+    ## Add prediction and interval for future prediction 
+    ## results are saved as "new_predictions" and "prediction_intervals", respectively.
+    xx = add_prediction_intervals(df_h, 
+                             target_day=np.array(np.array([i + 1 for i in range(k)])),
+                             outcome="hospitalizations", 
+                             methods=[shared_exponential,linear],
+                             interval_type='local',
+                             output_key = 'prediction_intervals')
+    ## Add past performance in dataframe
+    start_day = max(len(df) - 13, 0)
+    past_predictions = []
+    past_intervals = []
+    for i in range(start_day,len(df)-k+1):
+        hosp_data = hospitz[:i]
+        dicti = {"hosp":["Hospital_Name"],"hospitalizations" : [hosp_data]}
+        df_shared = pd.DataFrame(dicti)
+        x = add_prediction_intervals(df_shared, 
+                             target_day = np.array([k]),
+                             outcome = 'hospitalizations', 
+                             methods = predictors,
+                             interval_type = 'local',
+                             output_key = "hospital_intervals")
+        past_predictions.append(x['new_predictions'][0][0])
+        past_intervals.append(x['hospital_intervals'][0][0])
+    d = [past_predictions, past_intervals, xx['new_predictions'], xx['prediction_intervals']]
+    fig = generate_plot(d)
+    return fig, xx['new_predictions'], xx['prediction_intervals']
 
-    ensemble_prediction = fit_and_predict_ensemble(df_h,target_day = np.array([k]),
-                outcome = 'hospitalizations', 
-                methods = [shared_exponential,linear],
-                mode = 'predict_future', 
-                verbose = False)['predicted_hospitalizations_ensemble_' + str(k)].values
     
-    ensemble_prediction = [max(x[0], 0) for x in ensemble_prediction]
-    
-    return round(ensemble_prediction[0], 2)
-    
-
-def predict(df, output_var = ['hospitalizations'],k = 7):
-    return [[predict_kth_day(df, i, c) for i in range(1,k+1)] for c in output_var]
