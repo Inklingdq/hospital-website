@@ -44,36 +44,15 @@ def predict():
     	flash('Wrong file format.')
     	return redirect(request.url)
     data = pd.read_csv(file)
-    var = data.columns[1:]
-    output = model.predict(data, var)
-    [x.append(sum(x)) for x in output]
+    var = data.columns[1:][0]
+    fig, prediction, prediction_interval = model.predict(data, 7, var)
+    prediction.append(sum(prediction))
     name = name + '_prediction.csv'
     labels = [str(x) for x in range(1,8)] + ['sum']
-    pd.DataFrame(data = np.array([labels] + output).T,columns=data.columns).to_csv(name,index=False)
+    pd.DataFrame(data = np.array([labels] + output + prediction_interval).T,columns=data.columns + ['prediction interval']).to_csv(name,index=False)
     text_file = open("name.txt", "w")
     n = text_file.write(name)
-    session['output'] = output[0][:-1]
-    session['values'] = data.iloc[:,1].tolist()
-    session['legends'] = var[0]
-    session['labels'] = data.iloc[:,0].tolist()
-    return render_template("predict.html")
-
-@app.route('/get_data')
-def get_data():
-    output = session.get('output', None)
-    values = session.get('values', None)
-    legends = session.get('legends', None)
-    labels = session.get('labels', None)
-    return jsonify({'values':values, 'labels':labels + ['+'+str(x) for x in range(1,8)], 
-                                               'legends':legends,'predicts': output})
-
-@app.route("/tables")
-def show_tables():
-    f = open("name.txt", "r")
-    data = pd.read_csv(f.readline())
-    data.set_index(['Name'], inplace=True)
-    data.index.name=None
-    return render_template('predict.html',tables=[data.to_html],titles=data.columns.values)
+    return render_template("predict.html", plotcode = fig)
 
 
 @app.route('/download',methods=['POST'])

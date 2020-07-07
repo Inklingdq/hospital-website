@@ -28,8 +28,6 @@ from sklearn.metrics import mean_absolute_error
 import statsmodels.api as sm
 import plotly.graph_objects as go
 import plotly.io as pio
-
-# CHANGE THIS
 from exponential_modeling import *
 from fit_and_predict import *
 # Function to Train CLEP on your Hospital Data
@@ -38,11 +36,9 @@ exponential = {'model_type':'exponential'}
 shared_exponential = {'model_type':'shared_exponential'}
 linear = {'model_type':'linear'}
 advanced_model = {'model_type':'advanced_shared_model'}
-# Function to Train CLEP on your Hospital Data
-# Default: 7 Days Prediction
 predictors = [linear, shared_exponential]
-#CLEP: start_day=25
 
+##  Generate the plot with prediction results
 def generate_plot(d):
     fig = go.Figure()
     r = '179,74,71'
@@ -78,6 +74,9 @@ def generate_plot(d):
         ),
         template = 'plotly_dark'
     )
+    return plotly.offline.plot(data, include_plotlyjs=False, output_type='div')
+    
+## Return prediction/prediction intervals and plot
 def predict(df, k, output_var = "hospitalizations"):
         
     hospitz = df[output_var].values
