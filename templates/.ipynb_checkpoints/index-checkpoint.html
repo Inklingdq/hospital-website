@@ -13,7 +13,7 @@
 /* Create two equal columns that floats next to each other */
 .column {
   float: left;
-  width: 50%;
+  width: 45%;
   padding: 10px;
   height: 300px; /* Should be removed. Only for demonstration */
 }
@@ -40,26 +40,37 @@
 
         <button type="submit" class="btn btn-primary btn-block btn-large">Prediction for the next 7 days</button>
     </form>
-     <p> Input format: csv file with first column of date(different forms acceptable), one or multiple other columns of hospitalization information to predict on. Please input at least 5 days data.<p> 
+     <p> Input format: csv file with first column of date(different forms acceptable), one column of hospitalization information to predict on. Please input at least 17 days data.<p> 
     <div class="row">
-  <div class="column" style="background-color:black;">
-    <p>Input format</p>
-      <script>
-          console.log('Current directory: ' + process.cwd());
-      </script>
-    <img src="static/input.png" width="250" height="300">
-
-  </div>
-  <div class="column" style="background-color:black;">
-    <p>Output format</p>
-    <img src="static/output.png" width="250" height="300">
-
-  </div>
-</div>
-     
+          <div class="column" style="background-color:black;">
+                  <a href="static/UCSF.csv" style = "color:white" download>
+                       <p> Example input file</p>
+                  </a>
+                  <img src = "static/input.png" width = "200" height = "400" >
+          </div>
+          <div class="column" style="background-color:black;">
+                  <a href="static/UCSF_prediction.csv" style = "color:white" download>
+                      <p> Example output output file</p>
+                  </a>
+                  <img src="static/output.png" width="350" height="400">  
+          </div>
+    </div>
      <br>
- </div>
+     <br>
+     <br>
+     <br>
+     <br>
+     <br>
+     <br>
+     <div>
+             <a href = "static/example.png" style = "color:white" download>
+                     <p> Example output plot <p> 
+             </a>
+             <img src = "static/example.png" width = "800" height ="500" >
+     </div>  
     
-
+    <br>
+     <br>
+     <br>
 </body>
 </html>

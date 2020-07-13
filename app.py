@@ -43,13 +43,21 @@ def predict():
     if not(f):
     	flash('Wrong file format.')
     	return redirect(request.url)
-    data = pd.read_csv(file)
-    var = data.columns[1:][0]
-    fig, prediction, prediction_interval = model.predict(data, 7, var)
-    prediction.append(sum(prediction))
+    data = pd.read_csv(file).dropna()
+    var = data.columns[1]
+    ## Get prediction results
+    fig, prediction, prediction_interval = model.predict(data, 14, var)
+    ## Prepare dataframe to write
+    prediction.append(round(sum(prediction),1))
+    prediction_interval.append((round(sum([x[0] for x in prediction_interval],1)), 
+                                round(sum([x[1] for x in prediction_interval],1))))
+    dic = {'Date': [i+1 for i in range(14)] +['sum'],
+            data.columns[1]+' prediction': prediction,
+            'prediction interval':prediction_interval}
+    df = pd.DataFrame(dic, columns = ['Date',data.columns[1]+' prediction','prediction interval'])
+    ## Write dataframe to file and save the file name in name.txt
     name = name + '_prediction.csv'
-    labels = [str(x) for x in range(1,8)] + ['sum']
-    pd.DataFrame(data = np.array([labels] + output + prediction_interval).T,columns=data.columns + ['prediction interval']).to_csv(name,index=False)
+    df.round(1).to_csv(name,index=False)
     text_file = open("name.txt", "w")
     n = text_file.write(name)
     return render_template("predict.html", plotcode = fig)
